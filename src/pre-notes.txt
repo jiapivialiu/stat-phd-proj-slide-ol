@@ -1,0 +1,51 @@
+
+Slide 4: 
+get an idea of what does the estimated curves look like.
+
+TF has various degrees. Each degree corresponds to the degree of piecewise polynomials. For example, estimates of the first degree TF look like the first degree piecewise polynomial, which is piecewise linear.
+
+Slide 5: 
+Now, let's define the trend filtering problem on lines and see how it generates piecewise polynomial estimates.
+univariate TF = TF on lines
+It is a nonparametric regression model with two parts. The first part guarantees the data fidelity and second part regularizes the smoothness of the estimators.
+
+The penalty here is a ell_1 norm. It is the sum of the divided differences of various orders between neighboring parameters.
+[White Board!]
+    The divided difference is for example, for a signal sequence x=(x_1,...,x_n), the divided difference between neighboring parameters is |x_1-x_2|, |x_2-x_3|, ... And the second-order divided difference is ....
+    And these various orders can be defined in a uniform operator D^{k+1}.
+
+D^{k+1} is defined recursively.
+For example, the first-order D^1 is defined as ... corresponding the example of x.
+and the second-order ...
+The lowest order is the first order with k=0. The TF with k=0 generates piecewise-constant estimates, since neighboring parameters are regularized to be same to each other, and with a proper tuning parameter lambda, similar signals can be fitted by same estimates, and the jumps happen when there is a big difference between neighboring parameters. Then in the end, the estimates are piecewise linear. 
+[White Board!]
+    And for higher orders, for example, for the second-order, the divided differences of the divided differences are regularized to be same. It's like each neighboring pair of the divided differences are regularized to be same, e.g., |x_1-x_2| and |x_2-x_3| are penalized to be same. In other words, |x_1-x_2| and |x_2-x_3| are equal to each other. So it generates piecewise-linear estimates.
+
+Slide 7
+Graphical difference operator is equivalent to the divided difference matrix for line graphs, though the dimensions may be different. The graphical operator have more rows regularizing lower order divided difference between parameters, for example, the second-order D penalizes three neighboring parameters, the second-order Delta also penalizes a couple of two neighboring parameters.
+
+
+Slide 9
+PTF has a global optimum because it's strictly convex.
+It is also locally adaptive due to its ell_1 penalty. Here local adaptivity refers to the heterogeneous smoothness in different subdomains. It means that the estimated curves are more wiggly in some subdomains and more smooth in others. 
+
+This problem is hard to solve unlike the squared ell_2 norm. there is no closed-form solutions to the KKT conditions.
+We may approximate it using generic solvers for convex optimization problems using the tools e.g., CVXR. We type in the objective function that needs to be solved and 
+
+Slide 10
+proximal optimization is a subset of convex optimization.
+it only requires f to be closed proper convex, and not necessary to be differentiable, so it can be ell_1 norm.
+The poisson loss is closed proper convex?
+
+(first, a real-valued function is convex if the line segment between two distinct points on the graph of the function lies above the graph between the two points (or the epigraph of the function is a convex set, where epigraph is the set of points on or above the graph of the function, and convex set means given any two points in the set, the set contains the line segment);
+
+then, a proper convex function is an extended real-valued convex function with a non-empty domain, which never takes -infinity and not identically equal to +infinity; 
+
+and then, basically, a proper convex function is closed if and only if it's lower semi-continuous. An extended real-valued function is lower semi-continuous at a point x0 if, roughly speaking, the f(x) for x near x0 are not much lower than f(x0)
+    (Semi-continuity is a property of extended real-valued functions, that is weaker than continuity.)
+    the definition of a closed function is that a function f:R^n -> R is said to be closed if for each alpha \in R, the sublevel set (x\in dom(f) | f(x)\leq \alpha) or epigraph (define it in math) is a closed set.
+)
+
+Slide 12
+
+the mu changes the min value of the objective, but we do not need the min value, but the theta that minimize the objective. So we just need to make sure the the theta that minimizes the new objective is the same as the theta that minimizes the original objective. It 

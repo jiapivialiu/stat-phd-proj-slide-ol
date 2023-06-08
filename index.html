@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Topics in Trend Filtering with Poisson Loss</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jiaping(Olivia) Liu" />
+    <meta name="date" content="2023-05-30" />
+    <script src="index_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="src/xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="src/slides-style.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+layout: true
+
+---
+
+background-image: url("gfx/ptf.png")
+background-size: contain
+background-position: bottom
+
+.center[# Comprehensive Exam: Topics in Trend Filtering with Poisson Loss]
+
+.pull-left[
+#### PhD student: Jiaping(Olivia) Liu
+#### Supervisor: Dr. Daniel J. McDonald
+]
+
+.pull-right[
+#### Department of Statistics, UBC
+#### June 13, 2023
+]
+
+&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;&lt;br/&gt;
+
+---
+
+name: agenda
+
+#  Main objectives
+
+- Current work
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Review on trend filtering &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 1:* Poisson trend filtering on graphs and two proximal algorithms &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 2:* Application on reproduction number estimation &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Empirical comparison of proximal algorithms &lt;/span&gt;
+
+- Future work
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 3:* Weighted exponential-family trend filtering on lattices &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 4:* State-space model and optimization problem &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 5:* Parameter tuning for Poisson trend filtering &lt;/span&gt;
+
+- Questions?
+
+---
+
+#  Main objectives
+
+- Current work
+  - Review on trend filtering
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 1:* Poisson trend filtering on graphs and two proximal algorithms &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 2:* Application on reproduction number estimation &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Empirical comparison of proximal algorithms &lt;/span&gt;
+
+- &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Future work &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 3:* Weighted exponential-family trend filtering on lattices &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 4:* State-space model and optimization problem &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 5:* Parameter tuning for Poisson trend filtering &lt;/span&gt;
+
+- &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Questions? &lt;/span&gt;
+
+---
+
+## Review: Trend filtering (TF) on lines
+
+An example of sinusoidal signals `\(f(x)=\sin(2\pi x), x\in[0,1]\)` with random noises from `\(N(0,0.1^2)\)` with length `\(100\)` fitted by TF with `\(\lambda=1,4,10\)` for `\(k=0,1,2\)` respectively.
+&lt;img src="gfx/unnamed-chunk-1-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
+
+--
+TF with `\(k\)`th degree generates piecewise polynomial curves with degree `\(k\)`.
+
+- `\(0\)`th degree TF generates &lt;span style="color: #DB0B5B;"&gt;piecewise-constant curves&lt;/span&gt;. 
+&lt;!-- It penalizes *the (1st-order) divided difference* between neighboring parameters. --&gt;
+- `\(1\)`st degree TF generates &lt;span style="color: #ffa319;"&gt;piecewise-linear curves&lt;/span&gt;. 
+&lt;!-- It penalizes the *divided difference of the difference difference (i.e., the `\(2\)`nd-order divided difference)* between neighboring parameters. --&gt;
+- `\(2\)`nd degree TF generates &lt;span style="color: #6495ed;"&gt;piecewise-quadratic curves&lt;/span&gt;. 
+
+`\(\DeclareMathOperator*{\argmin}{argmin}\)`
+`\(\DeclareMathOperator*{\Lambert}{Lambert_0}\)`
+
+---
+
+## Review: Trend filtering (TF) on lines
+
+The `\(k\)`th degree _univariate_ trend filtering for _evenly-spaced_ signals is defined as _[Tibshirani, 2014]_:
+$$
+\hat{\theta} = \underset{\theta \in \mathbb{R}^n }{\argmin} \frac{1}{2} {\left\lVert y - \theta \right\rVert}_2^2 + \lambda {\left\lVert \color{orange}{D^{(k+1)}} \theta \right\rVert}_1,
+$$
+
+where `\(y\in\mathbb{R}^n\)` are observed signals of length `\(n\)`, `\(\theta\in\mathbb{R}^n\)` are parameters of interest, `\(\lambda\geq 0\)` is the tuning parameter, and `\(\color{orange}{D^{(k+1)}\in\mathbb{Z}^{(n-k-1,n)}}\)` is the divided difference matrix of order `\(k+1\)`, `\(k=0,1,2,\dots\)`. 
+
+--
+
+- The estimators are vectors.
+
+- Define `\(D^{(k+1)} := D^{(1)} D^{(k)}\)` recursively, 
+  - where `\(D^{(1)}\)` is a banded matrix of band `\((-1,1)\)` with varying dimensions `\({(n-k-1)\times(n-k)}\)` depending on `\(k\)`.
+
+
+&lt;!--
+- An alternative way to define the divided difference matrix of order `\(k+1\)` is `\(D^{(k+1)} := D^{(k,a)} - D^{(k,b)}\)`, where `\(D^{(k,a)} = (0, D^{(k)}), D^{(k,b)} = (D^{(k)}, 0)\)`.
+--&gt;
+
+--
+
+- For example, for a signal sequence of length `\(n=5\)`, `\(D^{(1)}\)` and `\(D^{(2)}\)` are respectively
+.pull-left[
+
+```
+##      [,1] [,2] [,3] [,4] [,5]
+## [1,]   -1    1    0    0    0
+## [2,]    0   -1    1    0    0
+## [3,]    0    0   -1    1    0
+## [4,]    0    0    0   -1    1
+```
+]
+.pull-right[
+
+```
+##      [,1] [,2] [,3] [,4] [,5]
+## [1,]    1   -2    1    0    0
+## [2,]    0    1   -2    1    0
+## [3,]    0    0    1   -2    1
+```
+]
+
+---
+
+## Review: Trend filtering (TF) on lines
+
+Cubic trend filtering (df=6) v.s. Cubic smoothing splines (df=6 _left_, 20 _right_): 
+
+.pull-left-wide[
+![graph](gfx/doppler6.png)
+]
+
+.pull-right-extra-narrow[
+
+Doppler signals: 
+
+  `\(f(x) = \sqrt{x(1-x)}\sin(2\pi \frac{1.05}{x+0.05})\)`, 
+  `\(x\in [0.2,0.5]\)`.
+
+
+- TF is locally adaptive.
+]
+
+---
+
+## Review: Trend filtering on graphs (GTF)
+
+Define a general undirected graph `\(\mathcal{G} = (\mathcal{V}, \mathcal{E})\)` represented by a vertex set `\(\mathcal{V} = \{i\}_{i=1}^n\)` and an edge set `\(\mathcal{E} = \{(e_{j1}, e_{j2})\}_{j=1}^m\)`, where `\((e_{j1},e_{j2})\in \{1,\dots,n\}^2\)` is a pair of node indices connected by the `\(j\)`th edge. 
+
+--
+
+Define a corresponding graph difference operator `\(\Delta^{(k+1)}\)` similar as `\(D^{(k+1)}\)` _[Wang et al., 2016]_ :
+- For odd `\(k\)`, `\(\Delta^{(k+1)} = (\Delta^{(1)})^T \Delta^{(k)} \in \mathbb{Z}^{n\times n}\)`.
+- For even `\(k\)`, `\(\Delta^{(k+1)} = \Delta^{(1)} \Delta^{(k)} \in \mathbb{Z}^{m\times n}\)`.
+
+--
+
+.pull-left-narrow[
+![graph](gfx/graph.png)
+
+An undirected graph with 6 nodes and 7 edges from [Wikipedia](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics) page of graph.
+]
+
+.pull-right-wide[
+For example, `\(\Delta^{(1)}\)` and `\(\Delta^{(2)}\)` of the example graph are 
+
+.pull-left[
+
+```
+##      [,1] [,2] [,3] [,4] [,5] [,6]
+## [1,]   -1    1    0    0    0    0
+## [2,]    0   -1    1    0    0    0
+## [3,]    0    0   -1    1    0    0
+## [4,]    0    0    0   -1    1    0
+## [5,]    0    0    0   -1    0    1
+## [6,]   -1    0    0    0    1    0
+## [7,]    0   -1    0    0    1    0
+```
+]
+
+.pull-right[
+
+```
+##      [,1] [,2] [,3] [,4] [,5] [,6]
+## [1,]    2   -1    0    0   -1    0
+## [2,]   -1    3   -1    0   -1    0
+## [3,]    0   -1    2   -1    0    0
+## [4,]    0    0   -1    3   -1   -1
+## [5,]   -1   -1    0   -1    3    0
+## [6,]    0    0    0   -1    0    1
+```
+]
+
+]
+
+---
+
+#  Main objectives
+
+- Current work
+  - Review on trend filtering 
+  - *Project 1:* Poisson trend filtering on graphs and two proximal algorithms
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 2:* Application on reproduction number estimation &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Empirical comparison of proximal algorithms &lt;/span&gt;
+
+- &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Future work &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 3:* Weighted exponential-family trend filtering on lattices &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 4:* State-space model and optimization problem &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 5:* Parameter tuning for Poisson trend filtering &lt;/span&gt;
+
+- &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Questions? &lt;/span&gt;
+
+---
+
+## Poisson trend filtering (PTF) on graphs 
+
+We use Poisson regression loss for the trend filtering model, defined as
+\begin{equation}
+        \hat{\theta} = \underset{\theta \in \mathbb{R}^n }{\argmin} \frac{1}{n}\sum_{i=1}^n -y_i\theta_i + e^{\theta_i} + \lambda {\left\lVert \Delta^{(k+1)} \theta\right\rVert}_1,
+\end{equation}
+where the Poisson loss is negative Likelihood of the natural parameter `\(\theta\)` of Poisson distribution.
+
+--
+
+.pull-left[
+The Poisson trend filtering problem: 
+
+- ***Global Optimum*** 
+
+- ***Locally Adaptive***
+
+- Estimators are ***vectors*** 
+]
+
+--
+
+.pull-right[
+Algorithms: 
+
+- Generic Solvers (e.g., `\(\texttt{CVXR}\)`)
+
+- Specialized algorithms, (e.g., `\(\texttt{glmgen}\)`)
+
+- Proposed proximal algorithms: ***linearized ADMM*** and ***proximal Newton method***.
+]
+
+---
+
+## Proximal algorithms 
+
+Define a ***proximal operator*** `\(\mathrm{prox}_{f,W}\)` (which solves a proximal optimization) given function `\(f\)` and matrix `\(W\)` as 
+`$$\mathrm{prox}_{f,W} (v) = \underset{x\in\mathbb{R}^n}{\argmin}\ f(x)+\frac{1}{2n} {\left\lVert x-v \right\rVert}_W^2,$$`
+where `\(v\in\mathbb{R}^n\)` is constant and `\(f\)` is closed proper convex and `\({\left\lVert z \right\rVert}_W^2 := z^T W z\)`.
+
+--
+
+- `\(f\)` can be a nonsmooth penalty, i.e., `\({\left\lVert \Delta^{(k+1)} \theta\right\rVert}_1\)`.
+
+--
+
+- Approximate PTF by proximal optimization problems iteratively. 
+  - Two algorithms propose two different ways.
+
+--
+
+- *Proximal algorithms* (for solving *proximal optimization*): 
+
+  - Alternating direction method of multipliers (ADMM).
+  - ***linearized ADMM*** and ***proximal Newton method***.
+    - Both use ADMM to solve PTF.
+
+---
+
+## ADMM for Poisson trend filtering (PTF)?
+
+Let `\(z := \Delta^{(k+1)}\theta\)`. The scaled augmented Lagrangian is 
+`$$\mathcal{L}_{\lambda, \rho}(\theta, z, u) = \frac{1}{n} \sum_{i=1}^n -y_i \theta_i + e^{\theta_i} + \lambda {\left\lVert z \right\rVert}_1 + \frac{\rho}{2} {\left\lVert \Delta^{(k+1)}\theta - z + u \right\rVert}_2^2 - \frac{\rho}{2} {\left\lVert u \right\rVert}_2^2,$$`
+
+where `\(u\)` is the scaled dual variable.
+
+--
+
+.pull-left[
+The ADMM subproblems are, at iterate `\(t+1\)`,
+
+Minimization: `\(\theta^{t+1} := \underset{\theta\in \mathbb{R}^n}{\argmin} \frac{1}{n} \sum_{i=1}^n -y_i \theta_i + e^{\theta_i} + \frac{\rho}{2} {\left\lVert \Delta^{(k+1)}\theta - z^t + u^t \right\rVert}_2^2,\)`
+
+Minimization: `\(z^{t+1} := \underset{z}{\argmin} \frac{\lambda}{\rho} {\left\lVert z \right\rVert}_1 + \frac{1}{2}{\left\lVert \Delta^{(k+1)}\theta^{t+1} - z + u^t \right\rVert}_2^2,\)`
+
+Dual ascent: `\(u^{t+1} \leftarrow u^t + \Delta^{(k+1)}\theta^{t+1} - z^{t+1}.\)`
+]
+
+--
+
+.pull-right-narrow[
+- Solve in a decomposed way.
+&lt;!-- two minimization problems followed by a dual ascent step. 
+Dual ascent step (i.e., a gradient ascent for the dual problem).--&gt;
+
+- Proximal optimization except the dual step.
+
+- `\(z\)`-step is a soft-thresholding.
+
+- However, the &amp;theta; step is not easily solvable.
+&lt;!-- Solve KKT condition, we can find that since the ill-conditioned Poisson loss of `\(\theta\)` and the matrix multiplied by `\(\theta\)`, there is no closed-form to solve for `\(\theta\)`. Here's where the linearization is involved. --&gt;
+  - ***.stress[Linearization]***
+]
+
+---
+
+## Linearized ADMM for Poisson trend filtering
+
+Linearize the `\(\theta\)` step by approximating the quadratic norm by its second-order Taylor approximation at each iteration: 
+`$$\theta^{t+1} := \underset{\theta\in \mathbb{R}^n}{\arg\min} \frac{1}{n} \sum_{i=1}^n -y_i \theta_i + e^{\theta_i} + \rho \theta^T (\Delta^{(k+1)})^T (\Delta^{(k+1)} \theta^t - z^t + u^t) + \frac{\mu}{2} {\left\lVert \theta - \theta^t\right\rVert}_2^2,$$` 
+where `\(\mu\)` is `\(2\rho\)` times the largest squared singular value of `\(\Delta^{(k+1)}\)`.
+
+--
+
+- Use **Lambert W** function:
+
+  - Use the principal branch for real numbers `\(\Lambert(·)\)`, where `\(a = \Lambert(b)\)` is the solution to `\(a e^a = b\)`, where `\(b\geq 0\)`.
+  - `\(\theta^{t+1} \leftarrow \frac{c}{n\mu} - \Lambert(\frac{ e^{\frac{c}{n\mu}} }{n\mu}),\)` where `\(c\)` is constant.
+
+--
+
+&lt;!-- - For a vector `\(v\)`, we provide **linear-time algorithms** for in-place computation of `\((\Delta^{(k+1)})^T \Delta^{(k+1)}v\)` and `\((\Delta^{(k+1)})^Tv\)`.
+--&gt;
+--
+
+- Iterate until the convergence of primal `\(r\)` and dual residuals `\(s\)`, where `\(r=\Delta^{k+1}\theta, s=(\Delta^{k+1})^T (z^t - z^{t-1})\)`. 
+
+---
+
+## Proximal Newton method for Poisson trend filtering
+
+
+Recall the proximal operator:
+`\(\mathrm{prox}_{f,W} (v) = \underset{x\in\mathbb{R}^n}{\argmin}\ f(x)+\frac{1}{2n} {\left\lVert x-v \right\rVert}_W^2.\)`
+
+--
+
+***Proximal Newton*** method solves at iteration `\(t\)`: 
+
+  - proximal minimization: `\(z^{t_+} := \mathrm{prox}_{f,W} (x),\)`
+
+  - backtracking linesearch: `\(z^{t+1} \leftarrow z^t + s^{t+1} (z^{t_+} - z^t),\)` where `\(s^t\)` is the step size at iteration `\(t+1\)`.
+
+--
+
+***Proximal Newton for PTF*** solves the tricky part, `\(\sum_{i=1}^n -y_i\theta_i + e^{\theta_i}\)`, using a second-order Taylor approximation: 
+`$$\theta^{t_+} := \mathrm{prox}_{W^t, \lambda} (c^t) = \underset{\theta\in\mathbb{R}^n}{\arg\min} \frac{1}{2n} {\left\lVert \theta - c^{t} \right\rVert}_{W^t}^2 + \lambda {\left\lVert \Delta^{(k+1)}\theta \right\rVert}_1.$$`
+
+- It is trend filtering with weight `\(W^t\)`, and can be solved by ADMM.
+
+- Iterate until convergence of the PTF objective.
+
+---
+
+#  Main objectives
+
+- Current work
+  - Review on trend filtering
+  - *Project 1:* Poisson trend filtering on graphs and two proximal algorithms
+  - *Project 2:* Application on reproduction number estimation 
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Empirical comparison of proximal algorithms &lt;/span&gt;
+
+- &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Future work &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 3:* Weighted exponential-family trend filtering on lattices &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 4:* State-space model and optimization problem &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 5:* Parameter tuning for Poisson trend filtering &lt;/span&gt;
+
+- &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Questions? &lt;/span&gt;
+
+---
+
+## Reproduction number
+
+- *Basic reproduction number* `\(\mathcal{R}_0\)` is the expected number of secondary infections caused by an infected individual in a completely susceptible population, is a fundamental indicator of epidemiological transmissibility.
+
+&lt;div style="display: flex; justify-content: center;"&gt;
+  &lt;img src="gfx/rep_number.jpeg" width="700" height="250"&gt;
+&lt;/div&gt;
+&lt;p style="text-align: center;"&gt;Image from the post https://mbounthavong.com/blog/2021/8/30/reproduction-ratecovid-19&lt;/p&gt; 
+
+--
+
+- ***Effective reproduction number*** `\(\mathcal{R}_t\)` differ from `\(\mathcal{R}_0\)` by relaxing the assumption of a completely susceptible population.
+
+  - `\(\mathcal{R}_t = \mathcal{R}_0 \times \text{susceptible individuals} / \text{population}\)`.
+  - `\(\mathcal{R}_t\)` explain more factors that may influence the spread of infectious diseases such as the changes of transmission rates due to interventions than `\(\mathcal{R}_0\)`.
+
+---
+## Mathematical models for reproduction number estimation
+
+- Compartmental models, e.g.,  Susceptible-Infectious-Susceptible (SIS) models.
+
+  - `\(S \xrightarrow{a} I \xrightarrow{b} S\)` with infection and recovery ratios `\(a,b\)` respectively and differential equations `$$dS(t)/dt = -\alpha S(t) I(t) + \beta I(t),$$` 
+`$$dI(t)/dt = \alpha S(t) I(t) - \beta I(t)$$` at time `\(t\)`. `\(\hat{\mathcal{R}}_0 = \hat{\beta} N/ \hat{\alpha}\)` for population `\(N\)`.
+  - Limitations: a) *Knowledge* of the transmission dynamics is required. 
+b) *Computational costs* grow with the increase of compartments.
+c) *Data of good quality* for each compartment are not always available.
+
+--
+
+- Direct estimation of `\(\mathcal{R}_t\)`.
+  
+  - It only requries the ***daily infections*** and distributional assumption of ***serial interval functions***, which approximate the generation time, i.e., the duration between the infection of a transmission pair (an infector and an infectee).
+  - *[Patrick et al., 2019]* proposed a convex optimization model with second-order temporal evolution adjusted and others (e.g., penalities on spatial evolution and outliers). 
+  - &lt;span style="color: orange;"&gt; We propose to use PTF for temporal evolution with order `\(k=1,2,3,\cdots\)`. &lt;/span&gt;
+  
+---
+## Poisson trend filtering for reproduction number estimation
+
+Let `\(w_i\)` be the weighted sum of infectious counts prior to day `\(i\)` and denote `\(\mathcal{R}:=\mathcal{R}_t\)`, `\(\theta := \log(\mathcal{R})\)`.
+Assume daily infections `\(y_i\)` follow Poisson distribution with mean `\(w_i e^{\theta_i}\)`, `\(i=1,\cdots, n\)`.
+
+--
+
+Define the proposed model as `$$\hat{\theta} := \underset{\theta\in\mathbb{R}^n}{\argmin} \frac{1}{n}\sum_{i=1}^n -y_i \theta_i + w_i e^{\theta_i} + \lambda {\left\lVert D^{(x, k+1)} \theta \right\rVert}_1.$$`
+
+--
+
+- `\(x\)` is the vector of data locations.
+
+  - `\(D^{(x, k+1)} := D^{(1)} X^k D^{(x,k)}\)` for `\(k\geq 1\)` and `\(D^{(x,1)} = D^{(1)}\)`. 
+  
+  - `\(X^k := \mathrm{diag}\left(\frac{k}{x_{k+1} - x_{1}},\cdots, \frac{k}{x_{n} - x_{n-k}} \right)\)`.
+
+--
+
+- For each `\(w_i\)`,
+  
+  - A chosen set of previous counts `\(y_{i-1},\cdots, y_{i-\tau_{\Phi}}\)` are weighted by serial interval functions `\(\Phi_1,\cdots, \Phi_{\tau_{\Phi}}\)`, where `\(\tau_{\Phi}\)` is a chosen period of infection, so that `\(w_i = \sum_{j=1}^{\tau_{\Phi}} \Phi_j y_{i-j}, j=1,\cdots,\tau_{\Phi}\)`.
+  
+  - The serial interval functions are approximated by probabilties of the Gamma distributions corresponding to quartiles. 
+
+---
+
+## Covid-19 data application
+
+An example of covid19 daily confirmed counts between March 1st, 2020 and April 15th, 2023 in British Columbia, Canada. 
+Data is available as of May 18, 2023 reported by B.C. Conservation Data Centre. 
+
+.pull-left-narrow[
+Peaks and troughs?
+
+Temporal evolution for various degrees?
+]
+
+.pull-right-wide[
+
+![graph](gfx/covid19.png)
+]
+
+---
+
+#  Main objectives
+
+- Current work
+  - Review on trend filtering 
+  - *Project 1:* Poisson trend filtering on graphs and two proximal algorithms 
+  - *Project 2:* Application on reproduction number estimation 
+  - Empirical comparison of proximal algorithms
+
+- &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Future work &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 3:* Weighted exponential-family trend filtering on lattices &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 4:* State-space model and optimization problem &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 5:* Parameter tuning for Poisson trend filtering &lt;/span&gt;
+
+- &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Questions? &lt;/span&gt;
+---
+
+## Experimental designs 
+
+- Degrees `\(k=0,1,2\)`.
+
+- `\(3\)` different levels (low, medium, and high) of regularization.
+
+  - `\(\lambda_{\max} := \frac{1}{n}{\left\lVert \left( y - \boldsymbol{1} \right)^{\top} \left(\Delta^{(k+1)} \right)^{\dagger} \right\rVert}_{\infty}\)`
+
+- `\(20\)` different sizes (n) of graph nodes, which are evenly spaced in a logarithmic scale in `\([20, 1000]\)`.
+
+- `\(10\)` random samples; each on a unique graph structure.
+
+  - Random dot product graphs (RDPGs) with undirected edges with `\(5\)` potential positions and `\(10\%\)` sparsity of edges.
+
+---
+
+## Comparisons of running times
+
+&lt;div style="display: flex; justify-content: center;"&gt;
+  &lt;img src="gfx/runtime.png" width="1000" height="550"&gt;
+&lt;/div&gt;
+
+---
+
+## Comparisons of running times
+
+&lt;div style="display: flex; justify-content: center;"&gt;
+  &lt;img src="gfx/single_iter_runtime.png" width="1000" height="550"&gt;
+&lt;/div&gt;
+
+---
+
+## Comparisons of iteration numbers
+
+&lt;div style="display: flex; justify-content: center;"&gt;
+  &lt;img src="gfx/iter_num.png" width="1000" height="550"&gt;
+&lt;/div&gt;
+
+---
+
+#  Main objectives
+
+- Current work
+  - Review on trend filtering
+  - *Project 1:* Poisson trend filtering on graphs and two proximal algorithms 
+  - *Project 2:* Application on reproduction number estimation 
+  - Empirical comparison of proximal algorithms 
+
+- Future work
+  - *Project 3:* Weighted exponential-family trend filtering on lattices
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 4:* State-space model and optimization problem &lt;/span&gt;
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 5:* Parameter tuning for Poisson trend filtering &lt;/span&gt;
+
+- &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Questions? &lt;/span&gt;
+
+---
+
+## Weighted exponential-family trend filtering on lattices
+
+The exponential-family density function: 
+`$$f_{Y_i}(y_i|\theta_i) = h(y_i) \mathrm{exp}\left\{ y_i \theta_i - \varphi(\theta_i) \right\}.$$`
+The original exponential-family trend filtering problems on lattices:
+`$$\hat{\theta} = \underset{\theta}{\mathrm{argmin}} \frac{1}{n} \sum_{i=1}^{n} -y_i\theta_i + \varphi(\theta_i) + \lambda {\left\lVert D^{[k+1]}_{n,d} \theta \right\rVert}_1,$$`
+where `\([k+1] := (k_1+1,...,k_d+1) \in \mathbb{N}^d\)`.
+
+--
+
+However, there can be an excess prediction risk in the original problem due to heteroskedasticity.
+- For example, for Poisson trend filtering, define the empirical risk to be `\(R_n(\theta) = \frac{1}{n}\sum_{i=1}^n -y_i\theta_i + \exp(\theta_i)\)` and population risk to be `\(R(\theta) = \frac{1}{n}\sum_{i=1}^n -\mathbb{E}(y_i)\theta_i + \exp(\theta_i)\)`.
+- When `\(y_i=0\)` and "true" `\(\theta_i=\infty\)` for `\(i=1,\cdots,n\)`, `\(R_n(\theta) = 0\)`, but `\(R(\theta) = \infty\)`, so the prediction risk `\(R_n(\theta) - R(\theta)\)` is `\(-\infty\)`. 
+
+- It occurs due to the lack of strong convexity.
+
+---
+
+## Weighted exponential-family trend filtering on lattices
+
+A solution is to introduce a null space projection penalty:
+
+`$$\hat{\theta}_{\mathrm{null}} = \underset{\theta}{\mathrm{argmin}} \frac{1}{n} \sum_{i=1}^{n} -y_i\theta_i + \varphi(\theta_i) + \lambda_1 {\lVert D\theta \rVert}_1 + \lambda_2  {\left\lVert P_{\mathcal{N}}\theta \right\rVert}_2.$$`
+
+However, it still depends on the level of heteroskedasticity.
+
+--
+
+We propose an alternative estimator which does not depend on the level of heteroskedasticity:
+`$$\hat{\theta}_{w} =\underset{\theta}{\mathrm{argmin}}\ \frac{1}{n} \sum_{i=1}^n -y_i\theta_i + \varphi(\theta_i) + \lambda {\left\lVert D W^{\circ} \theta \right\rVert}_1.$$`
+- Preliminary results? 
+- Next step?
+
+---
+
+#  Main objectives
+
+- Current work
+  - Review on trend filtering 
+  - *Project 1:* Poisson trend filtering on graphs and two proximal algorithms 
+  - *Project 2:* Application on reproduction number estimation 
+  - Empirical comparison of proximal algorithms 
+
+- Future work
+  - *Project 3:* Weighted exponential-family trend filtering on lattices 
+  - *Project 4:* State-space model and optimization problem
+  - &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; *Project 5:* Parameter tuning for Poisson trend filtering &lt;/span&gt;
+
+- &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Questions? &lt;/span&gt;
+
+---
+## State-space model and optimization problem
+
+Consider a state-space model: 
+`$$\begin{equation} 
+    \begin{split}
+        \text{observation equation: } y_i = \theta_i + \varepsilon_i,&amp; \ \varepsilon_i \overset{i.i.d.}{\sim} N\left(0, \sigma^2_{\varepsilon}\right), \\
+        \text{state equation: } \theta_{i+1} = 2\theta_i - \theta_{i-1} + \zeta_{i},&amp; \ \zeta_i \overset{i.i.d.}{\sim} N\left(0, \sigma^2_{\zeta}\right),
+    \end{split}
+\end{equation}$$`
+
+A corresponding optimization problem can be written as
+`$$\underset{\theta}{\min} \frac{1}{2} {\left\lVert y - \theta\right\rVert}_2^2 + \lambda {\left\lVert D^{(2)} \theta \right\rVert}_2^2.$$`
+Replace the normal by laplace distribution, it becomes 
+`$$\underset{\theta}{\min} \frac{1}{2} {\left\lVert y - \theta\right\rVert}_2^2 + \lambda {\left\lVert D^{(2)} \theta \right\rVert}_1.$$`
+---
+
+## State-space model and optimization problem
+
+Four alternative ways to solve the state-space model using scaled augmented Lagrangian:  
+
+$$
+\begin{equation} 
+    \begin{split}
+        (a)\ \mathcal{L}_{\lambda, \rho}(\theta, u, w) = &amp; \frac{1}{2} {\left\lVert y - \theta\right\rVert}_2^2 + \lambda {\left\lVert u \right\rVert}_1 + \rho  {\left\lVert u - D^{(2)}\theta + w \right\rVert}_2^2, \text{ where } u:= D^{(2)}\theta, 
+    \end{split}
+\end{equation}
+$$
+
+$$
+\begin{equation} 
+    \begin{split}
+        (b)\ \mathcal{L}_{\lambda, \rho}(\theta, u, w) = &amp; \frac{1}{2} {\left\lVert y - \theta\right\rVert}_2^2 + \lambda {\left\lVert D^{(1)} u \right\rVert}_1 + \rho {\left\lVert u - D^{(1)}\theta + w \right\rVert}_2^2, \text{ where } u:= D^{(1)}\theta,
+    \end{split}
+\end{equation}
+$$
+
+
+$$
+\begin{equation} 
+    \begin{split}
+        (c)\ \mathcal{L}_{\lambda, \rho}(\theta, v, w) = &amp; \frac{1}{2} {\left\lVert y - \theta\right\rVert}_2^2 + \lambda {\left\lVert D_a^{(1)}\theta - v \right\rVert}_1 + \rho {\left\lVert v - D_b^{(1)}\theta + w \right\rVert}_2^2, \text{ where } u:= D_b^{(1)}\theta, \\ 
+    \end{split}
+\end{equation}
+$$
+
+$$
+\begin{equation} 
+    \begin{split}
+        (d)\ \mathcal{L}_{\lambda, \rho_1, \rho_2}(\theta, u, v, w_1, w_2) =&amp;  \frac{1}{2} {\left\lVert y - \theta\right\rVert}_2^2 + \lambda {\left\lVert u-v \right\rVert}_1 + \rho_1 {\left\lVert u - D_a^{(1)}\theta + w_1 \right\rVert}_2^2 + \rho_2 {\left\lVert v - D_b^{(1)}\theta + w_2 \right\rVert}_2^2,
+    \end{split}
+\end{equation}
+$$
+where `\(u:=D_a^{(1)}\theta, v:=D_b^{(1)}\theta\)`.
+
+- Algorithms exist for (a) and (b). We have solved (d) and been working on solving a substep of (c).
+- Next step: 
+  - a more thorough justification of using convex optimization for state-space models; 
+  - comparison of the four alternative solutions. 
+
+---
+
+#  Main objectives
+
+- Current work
+  - Review on trend filtering 
+  - *Project 1:* Poisson trend filtering on graphs and two proximal algorithms 
+  - *Project 2:* Application on reproduction number estimation 
+  - Empirical comparison of proximal algorithms 
+
+- Future work
+  - *Project 3:* Weighted exponential-family trend filtering on lattices
+  - *Project 4:* State-space model and optimization problem
+  - *Project 5:* Parameter tuning for Poisson trend filtering
+  
+- &lt;span class="transparent-text"&gt; &lt;span style="color: gray;"&gt; Questions? &lt;/span&gt;
+
+---
+## Parameter tuning for Poisson trend filtering
+
+Poisson unbiased Kullback-Leibler (PUKL) estimator (proposed by _[deledalle2017estimation]_) can select the tuning parameters in Poisson trend filtering on lattices with null space projection: 
+`$$\text{PUKL}(\hat{\theta}) = {\left\lVert \hat{\beta} \right\rVert}_1 - \langle y, \log \hat{\beta}_{\downarrow}(y) \rangle,$$`
+where `\(\log \hat{\beta}_{\downarrow}(y) = \hat{\theta}_{\downarrow}(y), \{{\beta}_{\downarrow}(y) \}_i = \{\beta(y - e_i)\}_i\)`, `\(e_i\)` is the `\(i\)`th standard basis vector.
+
+- Parameter tuning for Poisson trend filtering? 
+
+---
+
+## References
+
+References of algorithms roughly from the most relevant to the most general papers:
+
+- [[Linearied ADMM for exponential-family trend filtering on lattices]](https://arxiv.org/abs/2209.09175) _Sadhanala, V., Bassett, R., Sharpnack, J., &amp; McDonald, D. J. (2022). Exponential Family Trend Filtering on Lattices. arXiv preprint arXiv:2209.09175._
+- [[Trend filtering on graphs]](https://www.jmlr.org/papers/volume17/15-147/15-147.pdf) _Wang, Y. X., Sharpnack, J., Smola, A. J., &amp; Tibshirani, R. J. (2016). Trend Filtering on Graphs. Journal of Machine Learning Research, 17, 1-41._
+- [[Specialized ADMM for trend filtering on lines]](https://www.stat.cmu.edu/~ryantibs/papers/fasttf.pdf) _Ramdas, A., &amp; Tibshirani, R. J. (2016). Fast and flexible ADMM algorithms for trend filtering. Journal of Computational and Graphical Statistics, 25(3), 839-858._
+- [[Proximal algorithms]](https://web.stanford.edu/~boyd/papers/pdf/prox_algs.pdf) _Parikh, N., &amp; Boyd, S. (2014). Proximal algorithms. Foundations and trends® in Optimization, 1(3), 127-239._
+- [[Dynamic programming for fused LASSO]](https://www.tandfonline.com/doi/abs/10.1080/10618600.2012.681238) _Johnson, N. A. (2013). A dynamic programming algorithm for the fused lasso and l 0-segmentation. Journal of Computational and Graphical Statistics, 22(2), 246-260._
+- [[Linearized taut string]](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&amp;arnumber=6579659) _Condat, L. (2013). A direct algorithm for 1-D total variation denoising. IEEE Signal Processing Letters, 20(11), 1054-1057._
+- [[Linearized ADMM]](https://www.ams.org/journals/mcom/2013-82-281/S0025-5718-2012-02598-1/S0025-5718-2012-02598-1.pdf) _Yang, J., &amp; Yuan, X. (2013). Linearized augmented Lagrangian and alternating direction methods for nuclear norm minimization. Mathematics of computation, 82(281), 301-329._
+
+---
+
+## References
+
+- [[ADMM]](https://web.stanford.edu/~boyd/papers/pdf/admm_distr_stats.pdf) _Boyd, S., Parikh, N., Chu, E., Peleato, B., &amp; Eckstein, J. (2011). Distributed optimization and statistical learning via the alternating direction method of multipliers. Foundations and Trends® in Machine learning, 3(1), 1-122._
+- [[ell_1 trend filtering (using PDIP)]](https://epubs.siam.org/doi/abs/10.1137/070690274) _Kim, S. J., Koh, K., Boyd, S., &amp; Gorinevsky, D. (2009). \ell_1 trend filtering. SIAM review, 51(2), 339-360._
+- [[Trend filtering: minimax rate and more]](https://projecteuclid.org/journals/annals-of-statistics/volume-42/issue-1/Adaptive-piecewise-polynomial-estimation-via-trend-filtering/10.1214/13-AOS1189.full) _Tibshirani, R. J. (2014). Adaptive piecewise polynomial estimation via trend filtering._
+- [[Discrete splines]](https://www.nowpublishers.com/article/Details/MAL-099) _Tibshirani, R. J. (2022). Divided differences, falling factorials, and discrete splines: Another look at trend filtering and related problems. Foundations and Trends® in Machine Learning, 15(6), 694-846._
+- [[Linearized ADMM]](https://www.jstor.org/stable/42002653) _Junfeng Yang and Xiaoming Yuan. Linearized augmented lagrangian and alternating direction methods for nuclear norm minimization. Mathematics of computation, 82(281): 301–329, 2013._
+- [[Proximal Newtom method]](https://stanford.edu/group/SOL/multiscale/papers/14siopt-proxNewton.pdf) _Jason D Lee, Yuekai Sun, and Michael A Saunders. Proximal newton-type methods for minimizing composite functions. SIAM Journal on Optimization, 24(3):1420–1443, 2014._
+
+---
+
+#  Main objectives
+
+- Current work
+  - Review on trend filtering 
+  - *Project 1:* Poisson trend filtering on graphs and two proximal algorithms 
+  - *Project 2:* Application on reproduction number estimation 
+  - Empirical comparison of proximal algorithms 
+
+- Future work
+  - *Project 3:* Weighted exponential-family trend filtering on lattices
+  - *Project 4:* State-space model and optimization problem
+  - *Project 5:* Parameter tuning for Poisson trend filtering
+  
+- Questions?
+
+---
+class: center, middle
+
+# Questions?
+
+&lt;img src="gfx/unnamed-chunk-6-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="src/macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"ratio": "16:9",
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

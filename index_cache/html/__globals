@@ -1,0 +1,7 @@
+xaringan-themer	::	c	google_font	library	lighten_color	style_duo_accent
+unnamed-chunk-1	$	library	lines	pi	plot	rnorm	seq	set.seed	sin	trendfilter
+unnamed-chunk-2	diag	diff	print
+unnamed-chunk-3	diag	diff	print
+unnamed-chunk-4	c	print	rbind	t
+unnamed-chunk-5	mat2	print
+unnamed-chunk-6	.data	$	aes	c	data.frame	dnorm	element_blank	element_rect	element_text	exp	geom_line	ggplot	grid.arrange	labs	length	library	rbind	rep	rpois	scale_colour_viridis_c	seq	theme	theme_bw	trendfilter
