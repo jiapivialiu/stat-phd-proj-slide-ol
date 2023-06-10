@@ -1,7 +1,15 @@
 xaringan-themer	::	c	google_font	library	lighten_color	style_duo_accent
-unnamed-chunk-1	$	library	lines	pi	plot	rnorm	seq	set.seed	sin	trendfilter
+unnamed-chunk-1	diag	diff	print
 unnamed-chunk-2	diag	diff	print
-unnamed-chunk-3	diag	diff	print
-unnamed-chunk-4	c	print	rbind	t
-unnamed-chunk-5	mat2	print
-unnamed-chunk-6	.data	$	aes	c	data.frame	dnorm	element_blank	element_rect	element_text	exp	geom_line	ggplot	grid.arrange	labs	length	library	rbind	rep	rpois	scale_colour_viridis_c	seq	theme	theme_bw	trendfilter
+unnamed-chunk-3	c	print	rbind	t
+unnamed-chunk-4	mat2	print
+unnamed-chunk-5	.data	$	aes	c	data.frame	dnorm	element_blank	element_rect	exp	geom_line	ggplot	grid.arrange	labs	length	library	rbind	rep	rpois	scale_colour_viridis_c	seq	theme	theme_bw	trendfilter
+unnamed-chunk-6	.data	$	aes	c	data.frame	dnorm	element_blank	element_rect	exp	geom_line	ggplot	grid.arrange	labs	length	library	rbind	rep	rpois	scale_colour_viridis_c	seq	theme	theme_bw	trendfilter
+setup	::	$	library	options
+unnamed-chunk-23	$	library	lines	pi	plot	rnorm	seq	set.seed	sin	trendfilter
+unnamed-chunk-24	diag	diff	print
+unnamed-chunk-25	diag	diff	print
+unnamed-chunk-26	c	print	rbind	t
+unnamed-chunk-27	mat2	print
+unnamed-chunk-28	.data	$	aes	c	data.frame	dnorm	element_blank	element_rect	exp	geom_line	ggplot	grid.arrange	labs	length	library	rbind	rep	rpois	scale_colour_viridis_c	seq	theme	theme_bw	trendfilter
+unnamed-chunk-7	.data	$	aes	c	data.frame	dnorm	element_blank	element_rect	exp	geom_line	ggplot	grid.arrange	labs	length	library	rbind	rep	rpois	scale_colour_viridis_c	seq	theme	theme_bw	trendfilter

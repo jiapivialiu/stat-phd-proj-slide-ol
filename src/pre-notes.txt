@@ -1,4 +1,13 @@
+---  new version
+See Notion page
 
+
+
+
+
+
+
+--- Old version
 Slide 4: 
 get an idea of what does the estimated curves look like.
 
@@ -49,3 +58,7 @@ and then, basically, a proper convex function is closed if and only if it's lowe
 Slide 12
 
 the mu changes the min value of the objective, but we do not need the min value, but the theta that minimize the objective. So we just need to make sure the the theta that minimizes the new objective is the same as the theta that minimizes the original objective. It 
+
+
+
+----

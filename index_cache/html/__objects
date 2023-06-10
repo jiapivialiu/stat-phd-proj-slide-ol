@@ -1,7 +1,15 @@
 xaringan-themer	fourth_color	primary	secondary	tertiary
-unnamed-chunk-1	est	n	x	y	.Random.seed
+unnamed-chunk-1	mat
 unnamed-chunk-2	mat
-unnamed-chunk-3	mat
-unnamed-chunk-4	mat	mat2
-unnamed-chunk-5	
+unnamed-chunk-3	mat	mat2
+unnamed-chunk-4	
+unnamed-chunk-5	fig1	fig2	fig3	k	lambda	mod0	mod1	mod2	n	poismean	res	res0	res1	res2	y
 unnamed-chunk-6	fig1	fig2	fig3	k	lambda	mod0	mod1	mod2	n	poismean	res	res0	res1	res2	y
+setup	
+unnamed-chunk-23	est	n	x	y
+unnamed-chunk-24	mat
+unnamed-chunk-25	mat
+unnamed-chunk-26	mat	mat2
+unnamed-chunk-27	
+unnamed-chunk-28	fig1	fig2	fig3	k	lambda	mod0	mod1	mod2	n	poismean	res	res0	res1	res2	y
+unnamed-chunk-7	fig1	fig2	fig3	k	lambda	mod0	mod1	mod2	n	poismean	res	res0	res1	res2	y

@@ -54,7 +54,7 @@ h1, h2, h3 {
 
 /* Font sizes */
 .larger { font-size: 400% }
-.large { font-size: 130% }
+.large { font-size: 120% }
 .midi { font-size: 85% }
 .small { font-size: 70% }
 .xsmall { font-size: 60% }
@@ -90,7 +90,7 @@ h1, h2, h3 {
 
   /*Left 70% - Right 30% */
 .pull-left-wide {
-  width: 67%;
+  width: 60%;
   float: left;
 }
 .pull-right-narrow {
@@ -108,7 +108,7 @@ h1, h2, h3 {
 
   /*Left 30% - Right 70% */
 .pull-left-narrow {
-  width: 20%;
+  width: 22%;
   float: left;
 }
 
