@@ -129,16 +129,16 @@ df %>%
   pivot_longer(!c(x,y), names_to = "curves", values_to = "values") %>%
   group_by(curves) %>%
   ggplot(aes(x=x, y=y)) + 
-  geom_point(alpha = .3) + 
-  geom_line(aes(y=values, col=curves), lwd=.9) + 
+  geom_point(alpha = .1) + 
+  geom_line(aes(y=values, col=curves), lwd=1.3) + 
   scale_color_manual(values = my_palette,
                      labels = c("k=0", "k=1", "k=2")) + 
   labs(color="TF degrees") + 
   theme_bw() + 
   theme(legend.position = "bottom", 
         legend.background = element_blank(),
-        legend.text = element_text(size = 14),
-        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 20),
+        legend.title = element_text(size = 20),
         axis.title.x = element_blank(),
         axis.title.y = element_blank())
   
