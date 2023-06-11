@@ -127,9 +127,8 @@ $$
 
 <span style="font-size: 30px;"> **A simple example:** </span>
 
-- $|D^{(1)}\theta| = (|\theta_1-\theta_2|, ... , |\theta_4 - \theta_5|)$ and $|D^{(2)}\theta| = (|\theta_1-2\theta_2 + \theta_3|, ..., |\theta_3 -2\theta_4 +\theta_5|)$.
-
 - $D^{(1)}$ and $D^{(2)}$ are respectively
+
 .pull-left[
 ```{r}
 mat <- diff(diag(5))
@@ -143,6 +142,7 @@ print(mat)
 ```
 ]
 
+- $|D^{(1)}\theta| = (|\theta_1-\theta_2|, ... , |\theta_4 - \theta_5|)$ and $|D^{(2)}\theta| = (|\theta_1-2\theta_2 + \theta_3|, ..., |\theta_3 -2\theta_4 +\theta_5|)$.
 
 ---
 
@@ -310,9 +310,9 @@ At iterate $t+1$:
 
 - $3$ degrees $k=0,1,2$.
 
-- $3$ different levels (low, medium, and high) of regularization.
+- $3$ different levels of regularization (using $\lambda_{\max}$)
 
-  - $10^{-4}\lambda_{\max}$, $\lambda_{\max}$, and their averages. 
+  - low level: $10^{-4}\lambda_{\max}$; high level: $\lambda_{\max}$; medium level: their averages. 
   
 - $20$ different sizes of graph nodes in $[20, 1000]$.
 
@@ -383,11 +383,13 @@ Let $\theta := \log(\mathcal{R})$. Given $w,y$, we define the model as
 $$\hat{\theta} = \underset{\theta\in\mathbb{R}^n}{\argmin} \frac{1}{n}\sum_{i=1}^n -y_i \theta_i + w_i e^{\theta_i} + \lambda {\left\lVert D^{(k+1)} \theta \right\rVert}_1.$$
 --
 
-- Given $y$, what are the weighted previous counts $w$? 
+- Given $y$, how the weighted previous counts $w$ is calculated? 
 
+  - Use serial interval function $\Phi$.
+  
   - Choose a period of infection $\tau_{\Phi}$, and then $w_i = \sum_{j=1}^{\tau_{\Phi}} \Phi_j y_{i-j}, j=1,\cdots,\tau_{\Phi}$.
   
-  - $\Phi_j$ is a serial interval function approximated by Gamma distributions.
+  - Approximate the probability $\Phi_j$ by Gamma distributions.
 
 ---
 
@@ -417,7 +419,7 @@ the pandemic dies out.
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 120vh;
+  height: 66vh;
 }
 </style>
 
@@ -428,7 +430,7 @@ the pandemic dies out.
 
 ---
 
-### _Future work 1:_ Weighted exponential-family trend filtering on lattices
+### _Future work 1:_ Explore theoretical results of trend filtering
 
 The original exponential-family trend filtering problems on lattices:
 $$\hat{\theta} = \underset{\theta}{\mathrm{argmin}} \frac{1}{n} \sum_{i=1}^{n} -y_i\theta_i + \varphi(\theta_i) + \lambda {\left\lVert D^{[k+1]}_{n,d} \theta \right\rVert}_1,$$
@@ -442,18 +444,19 @@ where $[k+1] := (k_1+1,...,k_d+1)$ is the degree for each row and column of the 
 
 --
 
-- Our solution: 
+- Our solution: weighted exponential-family trend filtering on lattices
 $$\hat{\theta}_{w} =\underset{\theta}{\mathrm{argmin}}\ \frac{1}{n} \sum_{i=1}^n -y_i\theta_i + \varphi(\theta_i) + \lambda {\left\lVert D^{[k+1]}_{n,d} W^{\circ} \theta \right\rVert}_1.$$
   
   - $W^{\circ}\theta$ returns standardized $\theta$, which eliminates heteroskedasticity.
 
   - Modify the problem to recover strong convexity. 
   
-  - Show the estimator solves the problem and converges in minimax rate.
-  
+<!--  - Show the estimator solves the problem and converges in minimax rate.
+-->
+
 ---
 
-### _Future work 2:_ State-space models and optimization problems
+### _Future work 2:_ Connect optimization problems to state-space models
 
 Consider a state-space model: 
 $$\begin{equation} 
