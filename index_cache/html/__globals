@@ -4,7 +4,7 @@ unnamed-chunk-2	diag	diff	print
 unnamed-chunk-3	c	print	rbind	t
 unnamed-chunk-4	mat2	print
 unnamed-chunk-5	.data	$	aes	c	data.frame	dnorm	element_blank	element_rect	exp	geom_line	ggplot	grid.arrange	labs	length	library	rbind	rep	rpois	scale_colour_viridis_c	seq	theme	theme_bw	trendfilter
-unnamed-chunk-6	.data	$	aes	c	data.frame	dnorm	element_blank	element_rect	exp	geom_line	ggplot	grid.arrange	labs	length	library	rbind	rep	rpois	scale_colour_viridis_c	seq	theme	theme_bw	trendfilter
+unnamed-chunk-6	pgamma
 setup	::	$	library	options
 unnamed-chunk-23	$	library	lines	pi	plot	rnorm	seq	set.seed	sin	trendfilter
 unnamed-chunk-24	diag	diff	print
@@ -12,4 +12,12 @@ unnamed-chunk-25	diag	diff	print
 unnamed-chunk-26	c	print	rbind	t
 unnamed-chunk-27	mat2	print
 unnamed-chunk-28	.data	$	aes	c	data.frame	dnorm	element_blank	element_rect	exp	geom_line	ggplot	grid.arrange	labs	length	library	rbind	rep	rpois	scale_colour_viridis_c	seq	theme	theme_bw	trendfilter
-unnamed-chunk-7	.data	$	aes	c	data.frame	dnorm	element_blank	element_rect	exp	geom_line	ggplot	grid.arrange	labs	length	library	rbind	rep	rpois	scale_colour_viridis_c	seq	theme	theme_bw	trendfilter
+unnamed-chunk-7	curve	dgamma	hist	rgamma	T	x
+unnamed-chunk-8	curve	dgamma	hist	rgamma	T	x
+unnamed-chunk-13	diag	diff	print
+unnamed-chunk-14	diag	diff	print
+unnamed-chunk-15	c	print	rbind	t
+unnamed-chunk-16	mat2	print
+unnamed-chunk-17	.data	$	aes	c	data.frame	dnorm	element_blank	element_rect	exp	geom_line	ggplot	grid.arrange	labs	length	library	rbind	rep	rpois	scale_colour_viridis_c	seq	theme	theme_bw	trendfilter
+unnamed-chunk-18	curve	dgamma	hist	pgamma	rgamma	set.seed	T	x
+unnamed-chunk-9	curve	dgamma	hist	rgamma	T	x
