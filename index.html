@@ -43,13 +43,15 @@ background-position: bottom
 
 ## Trend filtering is locally adaptive.
 
+Lobal adaptivity v.s. Global smoothness.
+
+&lt;b&gt;Cubic trend filtering (&lt;span style="color: blue;"&gt;df=6&lt;/span&gt;)&lt;/b&gt; v.s. 
+&lt;b&gt;Cubic smoothing splines (&lt;span style="color: orange;"&gt;df=6&lt;/span&gt; left; &lt;span style="color: orange;"&gt;df=20&lt;/span&gt; right) &lt;/b&gt;
+
 &lt;div style="display: flex; justify-content: left;"&gt;
-  &lt;img src="gfx/doppler6.png" width="1100" height="500"&gt;
+  &lt;img src="gfx/doppler6.png" width="1100" height="510"&gt;
 &lt;/div&gt;
 
-&lt;p style="text-align: center; font-size: 25px;"&gt;
-  &lt;span style="color: blue;"&gt;&lt;b&gt;Cubic trend filtering (df=6)&lt;/b&gt;&lt;/span&gt;  v.s. &lt;span style="color: orange;"&gt;&lt;b&gt;Cubic smoothing splines (df=6 &lt;i&gt;left&lt;/i&gt;, 20 &lt;i&gt;right&lt;/i&gt;)&lt;/b&gt;&lt;/span&gt;
-&lt;/p&gt; 
 
 ---
 
@@ -112,9 +114,7 @@ $$
   - counts, e.g., Covid-19 infection counts, pixels of images, and crime numbers.
 
   - heteroskedastic.
-
---
-
+  
 - Graphs, e.g., image grids, area maps.
 
 .pull-left[
@@ -211,9 +211,12 @@ Approximation and decomposition.
   - ***&lt;span style="color: blue;"&gt;linearized ADMM&lt;/span&gt;***: decomposition `\(\to\)` approximation;
   
   - ***&lt;span style="color: blue;"&gt;proximal Newton method&lt;span&gt;***: approximation `\(\to\)` decomposition.
-    
   
+--
 
+&lt;div class="left"&gt;
+&lt;h1 style="font-size:30px;"&gt;How can we choose between the two?&lt;/h1&gt;
+&lt;/div&gt;
 
 ---
 ## Linearized ADMM for PTF on graphs
@@ -234,9 +237,9 @@ in three decomposed steps (for `\(\theta,z,u\)` sequentially) iteratively.
 
 ## Proximal Newton method for PTF on graphs
 
-Denote `\(a^T W a = {\lVert a \rVert}_W^2\)`. At iterate `\(t+1\)`: 
+At iterate `\(t+1\)`: 
 
-- Approximate the Poisson loss and solve the *weighted Gaussian trend filtering* `$$\theta^{t_+} :=  \underset{\theta\in\mathbb{R}^n}{\arg\min} \frac{1}{2n} {\left\lVert \theta - c^{t} \right\rVert}_{W^t}^2 + \lambda {\left\lVert \Delta^{(k+1)}\theta \right\rVert}_1,$$` where `\(c^t\)` is the Gaussianized data and `\(W^t\)` is the weight. Solve it by ADMM using decomposition.
+- Approximate the Poisson loss and solve the *weighted Gaussian trend filtering* `$$\theta^{t_+} :=  \underset{\theta\in\mathbb{R}^n}{\arg\min} \frac{1}{2n} {\left\lVert \theta - c^{t} \right\rVert}_{W^t}^2 + \lambda {\left\lVert \Delta^{(k+1)}\theta \right\rVert}_1,$$` where `\(a^T W a := {\lVert a \rVert}_W^2\)`, `\(c^t\)` is the Gaussianized data and `\(W^t\)` is the weight. ***Solve it by ADMM.***
 
 --
 
@@ -245,9 +248,7 @@ Denote `\(a^T W a = {\lVert a \rVert}_W^2\)`. At iterate `\(t+1\)`:
 ---
 
 
-## Algorithms for PTF on graphs
-
-Approximation and decomposition. 
+## Comparisons of the two generic algorithms
 
   - ***&lt;span style="color: blue;"&gt;linearized ADMM&lt;/span&gt;***: decomposition `\(\to\)` approximation.
     
@@ -260,6 +261,12 @@ Approximation and decomposition.
     - requires a single-time matrix inversion for each iterate;
 
     - usually converges rapidly.
+
+--
+
+&lt;div class="left"&gt;
+&lt;h1 style="font-size:30px;"&gt;Both have advantages and limitations. &lt;/h1&gt;
+&lt;/div&gt;
 
 ---
 
@@ -321,28 +328,32 @@ Approximation and decomposition.
 
 - Daily infections `\(y_t \sim Pois(w_t \mathcal{R}_t)\)` on day `\(t\)`.
 
+  - ***Effective reproduction number*** `\(\mathcal{R}_t\)` is the expected number of secondary infections caused by an infected individual in a population.
+&lt;div style="display: flex; justify-content: center;"&gt;
+  &lt;img src="gfx/rep-num.png" width="800" height="300"&gt;
+&lt;/div&gt;
+
+--
   - `\(w_t\)` is the weighted sum of infections prior to day `\(t\)`. 
-  - Estimate reproduction numbers `\(\mathcal{R}_t\)`? Temporal evolution of `\(\mathcal{R}_t\)`?
 
 --
 
-- ***Effective reproduction number*** `\(\mathcal{R}_t\)` is the expected number of secondary infections caused by an infected individual in a population.
+- Estimate reproduction numbers `\(\mathcal{R}_t\)`? Temporal evolution of `\(\mathcal{R}_t\)`?
 
-&lt;div style="display: flex; justify-content: center;"&gt;
-  &lt;img src="gfx/rep-num.png" width="900" height="350"&gt;
-&lt;/div&gt;
+--
 
 ---
 ## Poisson trend filtering for reproduction number estimation
 
 Let `\(\theta := \log(\mathcal{R})\)`. Given `\(w,y\)`, we define the model as 
 `$$\hat{\theta} = \underset{\theta\in\mathbb{R}^n}{\argmin} \frac{1}{n}\sum_{i=1}^n -y_i \theta_i + w_i e^{\theta_i} + \lambda {\left\lVert D^{(k+1)} \theta \right\rVert}_1.$$`
+--
 
-- Given `\(y\)`, what are the weights `\(w\)`? 
+- Given `\(y\)`, what are the weighted previous counts `\(w\)`? 
 
   - Choose a period of infection `\(\tau_{\Phi}\)`, and then `\(w_i = \sum_{j=1}^{\tau_{\Phi}} \Phi_j y_{i-j}, j=1,\cdots,\tau_{\Phi}\)`.
   
-  - `\(\Phi_j\)`s are approximated by Gamma distributions.
+  - `\(\Phi_j\)` is a serial interval function approximated by Gamma distributions.
 
 ---
 
@@ -363,6 +374,23 @@ the pandemic dies out.
 
 ![graph](gfx/covid19.png)
 ]
+
+---
+
+
+&lt;style&gt;
+.center-vertically {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120vh;
+}
+&lt;/style&gt;
+
+&lt;div class="center-vertically"&gt;
+  &lt;h1 style="font-size: 66px;"&gt; Future work? &lt;/h1&gt;
+&lt;/div&gt;
+
 
 ---
 
@@ -409,9 +437,9 @@ Replace the normal by Laplace distribution in the state equation, it becomes
 `$$\underset{\theta}{\min} \frac{1}{2} {\left\lVert y - \theta\right\rVert}_2^2 + \lambda {\left\lVert D^{(2)} \theta \right\rVert}_1.$$`
 - Motivations: 
 
-  - Two fields are studied independently.
   - State-space models provide a perspective of prediction. 
   - Algorithms for state-space models (e.g., _Kalman filter_) can solve optimization problems efficiently. 
+  - Two fields are studied independently.
 
 ---
 ### _Future work 3:_ Parameter tuning for Poisson trend filtering
