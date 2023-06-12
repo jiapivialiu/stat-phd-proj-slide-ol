@@ -41,23 +41,35 @@ background-position: bottom
 
 ---
 
-## Trend filtering is locally adaptive.
+## Trend filtering (TF) is locally adaptive.
+&lt;b&gt;Cubic trend filtering (&lt;span style="color: blue;"&gt;df=6&lt;/span&gt;)&lt;/b&gt; v.s.
 
-Lobal adaptivity v.s. Global smoothness.
+.pull-left[
+&lt;b&gt;Cubic smoothing splines (&lt;span style="color: orange;"&gt;df=6&lt;/span&gt;) &lt;/b&gt;
+&lt;div style="display: flex; justify-content: left;"&gt;
+  &lt;img src="gfx/dopp6.png" width="630" height="320"&gt;
+&lt;/div&gt;
+]
 
-&lt;b&gt;Cubic trend filtering (&lt;span style="color: blue;"&gt;df=6&lt;/span&gt;)&lt;/b&gt; v.s. 
-&lt;b&gt;Cubic smoothing splines (&lt;span style="color: orange;"&gt;df=6&lt;/span&gt; left; &lt;span style="color: orange;"&gt;df=20&lt;/span&gt; right) &lt;/b&gt;
+--
+
+.pull-right[
+&lt;b&gt;Cubic smoothing splines (&lt;span style="color: orange;"&gt;df=20&lt;/span&gt;) &lt;/b&gt;
 
 &lt;div style="display: flex; justify-content: left;"&gt;
-  &lt;img src="gfx/doppler6.png" width="1100" height="510"&gt;
+  &lt;img src="gfx/dopp6-20.png" width="630" height="320"&gt;
 &lt;/div&gt;
+]
 
+--
+
+### _TF:_ Adaptive to local smoothness &amp; Low degrees of freedom (df)
 
 ---
 
 ## Trend filtering is locally adaptive.
 
-Beyond cubic trend filtering? Piecewise-polynomial.
+Beyond cubic trend filtering?  ***Piecewise-polynomial.***
 
 &lt;div style="display: flex; justify-content: center;"&gt;
   &lt;img src="gfx/tfline.png" width=900" height="500"&gt;
@@ -182,7 +194,7 @@ For example, `\(\Delta^{(1)}\)` and `\(\Delta^{(2)}\)` of the example graph are
 
 ## Algorithms for PTF on graphs
 
-- Generic Solvers (e.g., `\(\texttt{CVXR}\)`).
+- Generic solvers (e.g., `\(\texttt{CVXR}\)`).
 
 - Specialized algorithms for line graphs (e.g., `\(\texttt{glmgen}\)`).
 
@@ -340,8 +352,6 @@ At iterate `\(t+1\)`:
 
 - Estimate reproduction numbers `\(\mathcal{R}_t\)`? Temporal evolution of `\(\mathcal{R}_t\)`?
 
---
-
 ---
 ## Poisson trend filtering for reproduction number estimation
 
@@ -351,11 +361,9 @@ Let `\(\theta := \log(\mathcal{R})\)`. Given `\(w,y\)`, we define the model as
 
 - Given `\(y\)`, how the weighted previous counts `\(w\)` is calculated? 
 
-  - Use serial interval function `\(\Phi\)`.
+  - Use serial interval function `\(\Phi\)`, approximated by Gamma distributions.
   
   - Choose a period of infection `\(\tau_{\Phi}\)`, and then `\(w_i = \sum_{j=1}^{\tau_{\Phi}} \Phi_j y_{i-j}, j=1,\cdots,\tau_{\Phi}\)`.
-  
-  - Approximate the probability `\(\Phi_j\)` by Gamma distributions.
 
 ---
 
@@ -403,7 +411,7 @@ where `\([k+1] := (k_1+1,...,k_d+1)\)` is the degree for each row and column of 
 
 - ***High excess prediction risk*** due to the lack of strong convexity.
 
-- Existing approach can only converge in minimax rate when there is mild heteroskedasticity. 
+- An existing approach has its convergence rates depending on the level of heteroskedasticity. 
 
 --
 
@@ -412,7 +420,7 @@ where `\([k+1] := (k_1+1,...,k_d+1)\)` is the degree for each row and column of 
   
   - `\(W^{\circ}\theta\)` returns standardized `\(\theta\)`, which eliminates heteroskedasticity.
 
-  - Modify the problem to recover strong convexity. 
+  - Use Taylor approximation to recover strong convexity. 
   
 &lt;!--  - Show the estimator solves the problem and converges in minimax rate.
 --&gt;
@@ -444,11 +452,13 @@ Replace the normal by Laplace distribution in the state equation, it becomes
 ---
 ### _Future work 3:_ Parameter tuning for Poisson trend filtering
 
-Poisson unbiased Kullback-Leibler (PUKL) estimator (proposed by _[deledalle2017estimation]_) can select the tuning parameters in Poisson trend filtering on lattices with null space projection: 
-`$$\text{PUKL}(\hat{\theta}) = {\left\lVert \hat{\beta} \right\rVert}_1 - \langle y, \log \hat{\beta}_{\downarrow}(y) \rangle,$$`
+Poisson unbiased Kullback-Leibler (PUKL) estimator for ***Poisson trend filtering on lattices with null space projection***: 
+`$$\mathrm{PUKL}(\hat{\theta}) = {\left\lVert \hat{\beta} \right\rVert}_1 - \langle y, \log \hat{\beta}_{\downarrow}(y) \rangle,$$`
 where `\(\log \hat{\beta}_{\downarrow}(y) = \hat{\theta}_{\downarrow}(y), \{ \beta_{\downarrow}(y) \}_i = \{\beta(y - e_i)\}_i\)`, `\(e_i\)` is the `\(i\)`th standard basis vector.
 
-- How does it work for Poisson trend filtering? 
+- Advantage: minimal additional computations by minimizing `\(\mathrm{PUKL}(\hat{\theta})\)`. 
+
+- How does it work for Poisson trend filtering on graphs? 
 
 ---
 
@@ -468,7 +478,7 @@ class: center, middle
 
 # Questions?
 
-&lt;img src="gfx/unnamed-chunk-5-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-5-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ---
 ### Devided difference matrix and Graphical difference operator
@@ -522,7 +532,7 @@ pgamma(5, 2.5, scale = 2.5) - pgamma(4, 2.5, scale = 2.5) # probability on day 5
 ## [1] 0.119767
 ```
 
-&lt;img src="gfx/unnamed-chunk-7-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-7-1.svg" width="100%" style="display: block; margin: auto;" /&gt;
 
 ---
 ### Motivated example
