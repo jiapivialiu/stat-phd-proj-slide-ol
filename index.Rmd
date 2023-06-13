@@ -131,9 +131,9 @@ The $k$th degree _univariate_ trend filtering is defined as:
 $$
 \hat{\theta} = \underset{\theta \in \mathbb{R}^n }{\argmin} \frac{1}{2} {\left\lVert y - \theta \right\rVert}_2^2 + \lambda {\left\lVert \color{orange}{D^{(k+1)}} \theta \right\rVert}_1.
 $$
-- Divided difference matrix $\color{orange}{D^{(k+1)}}$ constructs the polynomial curves.
+- Divided difference matrix $\color{orange}{D^{(k+1)}}$ constructs picewise polynomials.
 
-- $\ell_1$ norm introduces <b>sparsity</b>.
+- $\ell_1$ norm introduces <b>sparsity</b> into the smoothness.
 
 --
 
@@ -222,7 +222,7 @@ print(mat2)
 ]
 ]
 
-- $|\Delta^{(1)}\theta| = (|\theta_1-\theta_2|, |\theta_2 - \theta_3|, ...)$ and $|\Delta^{(2)}\theta| = (|\theta_1-\theta_2-\theta_5|, |-\theta_1 +3\theta_2 -\theta_3 -\theta_5|, ...)$. 
+- $|\Delta^{(1)}\theta| = (|\theta_1-\theta_2|, |\theta_2 - \theta_3|, ...)$ and $|\Delta^{(2)}\theta| = (|2\theta_1-\theta_2-\theta_5|, |-\theta_1 +3\theta_2 -\theta_3 -\theta_5|, ...)$. 
 
 ---
 
@@ -425,6 +425,7 @@ the pandemic dies out.
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 }
 </style>
 
@@ -617,7 +618,7 @@ grid.arrange(fig1, fig2, fig3, nrow = 1)
 ```
 
 ---
-### Devided difference matrix and Graphical difference operator
+### Divided difference matrix and Graphical difference operator
 
 
 Define the divided difference matrix $D^{(k+1)} := D^{(1)} D^{(k)}$ recursively, 
@@ -633,22 +634,6 @@ Define the graph difference operator $\Delta^{(k+1)}$ recursively as:
 - for even $k$, $\Delta^{(k+1)} = \Delta^{(1)} \Delta^{(k)} \in \mathbb{Z}^{m\times n}$.
 
 ---
-### Regularization
-
-$\ell_1$ v.s. $\ell_2$ norms:
-
-- Local adaptivity v.s. global adaptivity;
-
-- Heterogeneous smoothness v.s. homogeneous smoothness.
-
-Degrees of freedom:
-
----
-### Random dot product graphs (RDPGs)
-
-
-
----
 ### Serial interval functions
 
 ```{r echo=TRUE}
@@ -660,49 +645,3 @@ pgamma(5, 2.5, scale = 2.5) - pgamma(4, 2.5, scale = 2.5) # probability on day 5
 hist(rgamma(1e3L, 2.5, scale=2.5), prob=T, main="Density of Gamma distribution with shape = 2.5, scale = 2.5", xlab="", breaks=20)
 curve(dgamma(x, shape = 2.5, scale = 2.5), add=T)
 ```
-
----
-### Motivated example
-
-<div style="display: flex; justify-content: center;">
-  <img src="gfx/kitty.jpg" width="400" height="250">
-  <img src="gfx/denoised-color-kitty-0-1.png" width="400" height="250">
-  <img src="gfx/denoised-color-kitty-1-1.png" width="400" height="250">
-</div>
-_Left to Right:_ Original kitty. Denoised kitty using TF with $k=0$, $\lambda=1$. Denoised kitty using TF with $k=1$, $\lambda=1$.
-<div style="display: flex; justify-content: center;">
-  <img src="gfx/noised-color-kitty.png" width="400" height="250">
-  <img src="gfx/denoised-color-kitty-0-10.png" width="400" height="250">
-  <img src="gfx/denoised-color-kitty-1-10.png" width="400" height="250">
-</div>
-_Left to Right:_ Noised kitty. Denoised kitty using TF with $k=0$, $\lambda=10$. Denoised kitty using TF with $k=1$, $\lambda=10$.
-
----
-### More empirical results
-
-<div style="display: flex; justify-content: center;">
-  <img src="gfx/linear_iters.png" width="500" height="300">
-  <img src="gfx/prox_iters.png" width="500" height="300">
-</div>
-
----
-### More empirical results
-
-<div style="display: flex; justify-content: center;">
-  <img src="gfx/linear_iters_ord1.png" width="500" height="300">
-  <img src="gfx/linear_iters_ord2.png" width="500" height="300">
-</div>
-<div style="display: flex; justify-content: center;">
-  <img src="gfx/linear_iters_ord3.png" width="500" height="300">
-</div>
-
----
-### More empirical results
-
-<div style="display: flex; justify-content: center;">
-  <img src="gfx/prox_iters_ord1.png" width="500" height="300">
-  <img src="gfx/prox_iters_ord2.png" width="500" height="300">
-</div>
-<div style="display: flex; justify-content: center;">
-  <img src="gfx/prox_iters_ord3.png" width="500" height="300">
-</div>
