@@ -425,7 +425,7 @@ the pandemic dies out.
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 150vh;
+  height: 100vh;
 }
 </style>
 
