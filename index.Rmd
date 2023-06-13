@@ -74,7 +74,7 @@ background-position: bottom
 .center[# Topics in Trend Filtering with Poisson Loss]
 
 .pull-left[
-#### Author & Presenter: Jiaping(Olivia) Liu
+#### Jiaping(Olivia) Liu
 #### Supervisor: Dr. Daniel J. McDonald
 ]
 
@@ -425,6 +425,7 @@ the pandemic dies out.
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 </style>
 
